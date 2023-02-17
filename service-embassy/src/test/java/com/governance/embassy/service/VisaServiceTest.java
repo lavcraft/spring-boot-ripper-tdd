@@ -1,50 +1,51 @@
 package com.governance.embassy.service;
 
-import com.governance.embassy.port.output.VisaHttlClientProperties;
+import com.governance.embassy.port.output.VisaHttpClientProperties;
 import com.governance.embassy.port.output.VisaRequest;
 import com.governance.embassy.port.output.VisaRequestResponse;
-import org.junit.jupiter.api.BeforeEach;
+import com.governance.embassy.port.output.VisaStatusResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class VisaServiceTest {
-    @Mock        RestTemplate httpClientMock;
-    @Spy         VisaHttlClientProperties properties = new VisaHttlClientProperties("http://localhost:8081");
-    @InjectMocks VisaService target;
+    @Mock        RestTemplate             httpClientMock;
+    @Spy         VisaHttpClientProperties properties = new VisaHttpClientProperties("http://localhost:8081");
+    @InjectMocks VisaService              target;
 
     @Test
     void should_send_status_request_to_external_service() {
         //given
         when(this.httpClientMock.getForEntity(
-                "http://localhost:8081/visa-status?requestId=U-123451",
-                VisaRequestResponse.class
-        )).thenReturn(ResponseEntity.ok(VisaRequestResponse
+                "http://localhost:8081/visa-status?ticket=T-12345",
+                VisaStatusResponse.class
+        )).thenReturn(ResponseEntity.ok(VisaStatusResponse
                 .builder()
-                .ticket("T-12345")
+                .status("processing")
                 .build()));
 
         //when
-        String status = target.getStatus("U-12345");
+        String status = target.getStatus("T-12345");
 
         //then
         verify(
-                this.httpClientMock,
+                this.properties,
                 times(1)
-        ).getForEntity(
-                anyString(),
-                eq(VisaRequestResponse.class)
+        ).getEndpoint();
+        assertEquals(
+                "processing",
+                status,
+                "ticket status should be returned"
         );
     }
 
@@ -53,16 +54,43 @@ class VisaServiceTest {
         //given
         when(httpClientMock.postForEntity(
                 "http://localhost:8081/visa-request",
-                VisaRequest.class,
+                VisaRequest
+                        .builder()
+                        .userId("U-12345")
+                        .build(),
                 VisaRequestResponse.class
         )).thenReturn(ResponseEntity.ok(VisaRequestResponse
                 .builder()
+                .ticket("T-12345")
                 .build()));
 
         //when
-        String ticket = target.createRequestOrGetStatus("U-12345");
+        String ticket = target.createRequest("U-12345");
 
         //then
+        assertEquals("T-12345", ticket, "ticket num expected not null");
+    }
 
+    @Test
+    void should_return_ticket_and_status_when_request_already_created() {
+        //given
+        when(httpClientMock.postForEntity(
+                "http://localhost:8081/visa-request",
+                VisaRequest
+                        .builder()
+                        .userId("U-12345")
+                        .build(),
+                VisaRequestResponse.class
+        )).thenReturn(ResponseEntity.badRequest()
+                                    .body(VisaRequestResponse
+                                            .builder()
+                                            .ticket("T-12345")
+                                            .build()));
+
+        //when
+        String ticket = target.createRequest("U-12345");
+
+        //then
+        assertEquals("T-12345", ticket, "ticket num expected not null");
     }
 }

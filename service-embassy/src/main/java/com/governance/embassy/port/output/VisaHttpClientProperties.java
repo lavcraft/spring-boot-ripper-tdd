@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
-@ConfigurationProperties(prefix = "visa.endpoint")
-public class VisaHttlClientProperties {
+@ConfigurationProperties(prefix = "visa")
+public class VisaHttpClientProperties {
     private String endpoint;
 
 }

@@ -4,6 +4,7 @@ import com.governance.embassy.port.input.VisaRequestResponse;
 import com.governance.embassy.service.VisaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -30,7 +31,7 @@ public class VisaRequestControllerTest {
     @Test
     void should_return_ticket_number_when_request_visa() {
         //given
-        when(visaService.createRequestOrGetStatus("12345")).thenReturn("T-134");
+        when(visaService.createRequest("12345")).thenReturn("T-134");
 
         //when
         ResponseEntity<VisaRequestResponse> forEntity = template.getForEntity("/visa?userId=12345", VisaRequestResponse.class);

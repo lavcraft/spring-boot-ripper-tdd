@@ -18,7 +18,7 @@ public class VisaRequestController {
 
     @GetMapping("/visa")
     public ResponseEntity<Object> visa(@RequestParam String userId) {
-        String ticket = visaService.createRequestOrGetStatus(userId);
+        String ticket = visaService.createRequest(userId);
 
         return ResponseEntity
                 .ok(VisaRequestResponse
