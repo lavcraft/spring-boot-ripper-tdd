@@ -4,14 +4,13 @@ import com.governance.embassy.port.input.VisaRequestResponse;
 import com.governance.embassy.service.VisaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -43,5 +42,10 @@ public class VisaRequestControllerTest {
                 () -> assertNotNull(body.getTicket(), "Ticket number should be exist"),
                 () -> assertEquals( "T-134", body.getTicket(), "ticket should be T-134, because it mocked")
         );
+    }
+
+    @Bean
+    public String string() {
+        return null;
     }
 }

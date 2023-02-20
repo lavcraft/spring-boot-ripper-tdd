@@ -45,4 +45,18 @@ class UserInfoRestComponentTest {
 
     }
 
+    @Test
+    void should_return_user_info_when_user_send_structured_names() throws IOException {
+        //language=json
+        UserInfo read = userInfoJacksonTester.parseObject("""
+                {
+                "firstName": "Kirill",
+                "lastName": "Tolkachev"
+                }""");
+
+        assertAll(
+                () -> assertThat(read.getFirstName()).isEqualTo("Kirill"),
+                () -> assertThat(read.getLastName()).isEqualTo("Tolkachev")
+        );
+    }
 }

@@ -2,17 +2,11 @@ package com.governance.embassy.service;
 
 import com.governance.embassy.port.output.VisaStatusResponse;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.web.client.RestTemplate;
-
-import javax.security.auth.login.AccountLockedException;
-import java.time.Clock;
-import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -22,7 +16,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class VisaServiceIntTest {
+public class VisaServiceCacheTest {
     @Autowired VisaService  visaService;
     @MockBean  RestTemplate visaRestTemplate;
 
@@ -64,8 +58,8 @@ public class VisaServiceIntTest {
                 .build()));
 
         //when
-        String status1 = visaService.getStatus("T-1234");
-        String status2 = visaService.getStatus("T-1235");
+        String status1 = visaService.getStatus("T-1235");
+        String status2 = visaService.getStatus("T-1236");
 
         //then
         assertEquals(status1, status2, "status from cache should be equal actual status");

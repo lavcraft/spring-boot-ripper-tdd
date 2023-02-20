@@ -3,7 +3,6 @@ package com.governance.embassy.port.input;
 import com.governance.embassy.port.input.serde.UnsupportedUserInfoRawInputException;
 import com.governance.embassy.port.input.serde.UserInfoRestErrorResponse;
 import com.governance.embassy.service.UserInfoService;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;

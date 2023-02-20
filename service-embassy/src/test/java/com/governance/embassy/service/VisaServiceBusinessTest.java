@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class VisaServiceTest {
+class VisaServiceBusinessTest {
     @Mock        RestTemplate             httpClientMock;
     @Spy         VisaHttpClientProperties properties = new VisaHttpClientProperties("http://localhost:8081");
     @InjectMocks VisaService              target;
