@@ -14,13 +14,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class VisaServiceBusinessTest {
     @Mock        RestTemplate             httpClientMock;
-    @Spy         VisaHttpClientProperties properties = new VisaHttpClientProperties("http://localhost:8081");
+    @Spy         VisaHttpClientProperties properties = new VisaHttpClientProperties("http" +
+                                                                                    "://localhost"
+                                                                                    + ":8081");
     @InjectMocks VisaService              target;
 
     @Test
@@ -29,10 +30,7 @@ class VisaServiceBusinessTest {
         when(this.httpClientMock.getForEntity(
                 "http://localhost:8081/visa-status?ticket=T-12345",
                 VisaStatusResponse.class
-        )).thenReturn(ResponseEntity.ok(VisaStatusResponse
-                .builder()
-                .status("processing")
-                .build()));
+        )).thenReturn(ResponseEntity.ok(VisaStatusResponse.builder().status("processing").build()));
 
         //when
         String status = target.getStatus("T-12345");
@@ -54,21 +52,20 @@ class VisaServiceBusinessTest {
         //given
         when(httpClientMock.postForEntity(
                 "http://localhost:8081/visa-request",
-                VisaRequest
-                        .builder()
-                        .userId("U-12345")
-                        .build(),
+                VisaRequest.builder().userId("U-12345").build(),
                 VisaRequestResponse.class
-        )).thenReturn(ResponseEntity.ok(VisaRequestResponse
-                .builder()
-                .ticket("T-12345")
-                .build()));
+        )).thenReturn(ResponseEntity.ok(VisaRequestResponse.builder()
+                                                           .ticket("T-12345").build()));
 
         //when
         String ticket = target.createRequest("U-12345");
 
         //then
-        assertEquals("T-12345", ticket, "ticket num expected not null");
+        assertEquals(
+                "T-12345",
+                ticket,
+                "ticket num expected not null"
+        );
     }
 
     @Test
@@ -76,21 +73,19 @@ class VisaServiceBusinessTest {
         //given
         when(httpClientMock.postForEntity(
                 "http://localhost:8081/visa-request",
-                VisaRequest
-                        .builder()
-                        .userId("U-12345")
-                        .build(),
+                VisaRequest.builder().userId("U-12345").build(),
                 VisaRequestResponse.class
         )).thenReturn(ResponseEntity.badRequest()
-                                    .body(VisaRequestResponse
-                                            .builder()
-                                            .ticket("T-12345")
-                                            .build()));
+                                    .body(VisaRequestResponse.builder().ticket("T-12345").build()));
 
         //when
         String ticket = target.createRequest("U-12345");
 
         //then
-        assertEquals("T-12345", ticket, "ticket num expected not null");
+        assertEquals(
+                "T-12345",
+                ticket,
+                "ticket num expected not null"
+        );
     }
 }

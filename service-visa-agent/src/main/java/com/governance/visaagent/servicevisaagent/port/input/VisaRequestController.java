@@ -2,17 +2,15 @@ package com.governance.visaagent.servicevisaagent.port.input;
 
 import com.governance.visaagent.servicevisaagent.dal.VisaRequest;
 import com.governance.visaagent.servicevisaagent.service.VisaRequestService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class VisaRequestController {
-    private VisaRequestService visaRequestService;
-
-    public VisaRequestController(final VisaRequestService visaRequestService) {
-        this.visaRequestService = visaRequestService;
-    }
+    private final VisaRequestService visaRequestService;
 
     @PostMapping("/visa-request")
     public VisaRequestResponse createVisaRequest(@RequestBody UserInfo userInfo) {

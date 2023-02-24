@@ -6,6 +6,7 @@ import com.governance.embassy.port.output.VisaRequestResponse;
 import com.governance.embassy.port.output.VisaStatusResponse;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;

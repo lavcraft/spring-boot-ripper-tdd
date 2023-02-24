@@ -36,7 +36,7 @@ class UserInfoRestComponentTest {
                 UnsupportedUserInfoRawInputException.class,
                 () -> {
                     //language=json
-                    UserInfo read = userInfoJacksonTester.parseObject("""
+                    userInfoJacksonTester.parseObject("""
                             {
                             "raw": "My failed input"
                             }""");

@@ -15,17 +15,19 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class VisaRequestControllerTest {
-    @Autowired
-    TestRestTemplate template;
-    @MockBean
-    VisaService visaService;
+    @Autowired TestRestTemplate template;
+    @MockBean  VisaService      visaService;
 
     @Test
-    void should_accept_visa_request_with_id_and_return_ok() {
-        ResponseEntity<String> forEntity = template.getForEntity("/visa?userId=12345", String.class);
+    void should_accept_visa_request_return_ok() {
+        ResponseEntity<String> forEntity = template.getForEntity(
+                "/visa?userId=12345",
+                String.class
+        );
 
         assertTrue(forEntity.getStatusCode().is2xxSuccessful());
     }
+
 
     @Test
     void should_return_ticket_number_when_request_visa() {
@@ -33,14 +35,23 @@ public class VisaRequestControllerTest {
         when(visaService.createRequest("12345")).thenReturn("T-134");
 
         //when
-        ResponseEntity<VisaRequestResponse> forEntity = template.getForEntity("/visa?userId=12345", VisaRequestResponse.class);
-        VisaRequestResponse body = forEntity.getBody();
+        ResponseEntity<VisaRequestResponse> forEntity = template.getForEntity(
+                "/visa?userId=12345",
+                VisaRequestResponse.class
+        );
+        VisaRequestResponse                 body      = forEntity.getBody();
 
         //then
         assertAll(
                 "Body should exist",
-                () -> assertNotNull(body.getTicket(), "Ticket number should be exist"),
-                () -> assertEquals( "T-134", body.getTicket(), "ticket should be T-134, because it mocked")
+                () -> assertNotNull(
+                        body.getTicket(),
+                        "Ticket number should be exist"
+                ),
+                () -> assertEquals("T-134",
+                        body.getTicket(),
+                        "ticket should be T-134, because it mocked"
+                )
         );
     }
 

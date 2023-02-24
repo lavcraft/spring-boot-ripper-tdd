@@ -2,6 +2,7 @@ package com.governance.visaagent.servicevisaagent;
 
 import com.governance.visaagent.servicevisaagent.dal.VisaRequest;
 import com.governance.visaagent.servicevisaagent.dal.VisaRequestRepository;
+import com.governance.visaagent.servicevisaagent.service.VisaRequestService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,12 +20,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest
 public class VisaStatusControllerTest {
     @Autowired MockMvc mockMvc;
-    @MockBean VisaRequestRepository visaRequestRepository;
+    @MockBean VisaRequestService visaRequestService;
 
     @Test
     void should_return_status_for_saved_request() throws Exception {
         //given
-        when(visaRequestRepository.findById(100L)).thenReturn(Optional.of(VisaRequest.builder()
+        when(visaRequestService.findById(100L)).thenReturn(Optional.of(VisaRequest.builder()
                 .id(100L).status("processing").userId("U-1").build()));
 
         //when
@@ -35,7 +36,7 @@ public class VisaStatusControllerTest {
     @Test
     void should_return_404_when_no_request_available() throws Exception {
         //given
-        when(visaRequestRepository.findById(100L)).thenReturn(Optional.of(VisaRequest.builder()
+        when(visaRequestService.findById(100L)).thenReturn(Optional.of(VisaRequest.builder()
                 .id(100L).status("processing").userId("U-1").build()));
 
         //when

@@ -17,8 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest
 public class UserResolveIdControllerTest {
-    @Autowired MockMvc mockMvc;
-    @MockBean UserInfoService userInfoService;
+    @Autowired MockMvc         mockMvc;
+    @MockBean  UserInfoService userInfoService;
 
     @Test
     void should_resolve_user_id_by_name() throws Exception {
@@ -49,7 +49,7 @@ public class UserResolveIdControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.message").value("Follow format: My name is FIRSTNAME SECONDNAME"));
+                .andExpect(jsonPath("$.message").value("Follow format: My " + "name is FIRSTNAME " + "SECONDNAME"));
 
     }
 }
