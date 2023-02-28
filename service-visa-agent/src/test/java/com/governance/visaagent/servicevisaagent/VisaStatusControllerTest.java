@@ -1,8 +1,7 @@
 package com.governance.visaagent.servicevisaagent;
 
 import com.governance.visaagent.servicevisaagent.dal.VisaRequest;
-import com.governance.visaagent.servicevisaagent.dal.VisaRequestRepository;
-import com.governance.visaagent.servicevisaagent.service.VisaRequestService;
+import com.governance.visaagent.servicevisaagent.service.VisaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,7 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,14 +17,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest
 public class VisaStatusControllerTest {
-    @Autowired MockMvc mockMvc;
-    @MockBean VisaRequestService visaRequestService;
+    @Autowired MockMvc     mockMvc;
+    @MockBean  VisaService visaRequestService;
 
     @Test
     void should_return_status_for_saved_request() throws Exception {
         //given
         when(visaRequestService.findById(100L)).thenReturn(Optional.of(VisaRequest.builder()
-                .id(100L).status("processing").userId("U-1").build()));
+                                                                                  .id(100L).status("processing").userId("U-1").build()));
 
         //when
         mockMvc.perform(get("/visa-status").param("ticket", "100"))
@@ -37,7 +35,7 @@ public class VisaStatusControllerTest {
     void should_return_404_when_no_request_available() throws Exception {
         //given
         when(visaRequestService.findById(100L)).thenReturn(Optional.of(VisaRequest.builder()
-                .id(100L).status("processing").userId("U-1").build()));
+                                                                                  .id(100L).status("processing").userId("U-1").build()));
 
         //when
         mockMvc.perform(get("/visa-status").param("ticket", "200"))

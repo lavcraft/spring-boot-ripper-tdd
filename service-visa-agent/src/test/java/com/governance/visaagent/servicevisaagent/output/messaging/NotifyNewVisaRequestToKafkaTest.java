@@ -1,19 +1,18 @@
-package com.governance.visaagent.servicevisaagent.output;
+package com.governance.visaagent.servicevisaagent.output.messaging;
 
 import com.governance.visaagent.servicevisaagent.port.input.UserInfo;
-import com.governance.visaagent.servicevisaagent.service.VisaRequestService;
-import jakarta.annotation.PostConstruct;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import com.governance.visaagent.servicevisaagent.service.VisaService;
+import com.governance.visaagent.servicevisaagent.util.MessagingIncludeFilter;
+import com.governance.visaagent.servicevisaagent.util.MessagingTestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.KafkaContainer;
@@ -21,29 +20,31 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+
 @Testcontainers
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+//@Import(MessagingTestConfiguration.class)
+//@ComponentScan(
+//        includeFilters = {
+//                @ComponentScan.Filter(type = FilterType.CUSTOM,
+//                                      classes = MessagingIncludeFilter.class)
+//        }
+//)
 public class NotifyNewVisaRequestToKafkaTest {
     @Container static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse(
             "confluentinc/cp-kafka:7.3.1"));
 
-//    @SpyBean TestKafkaListener testKafkaListener;
-
-    @Autowired VisaRequestService visaRequestService;
-    static     CountDownLatch     countDownLatch = new CountDownLatch(5);
-
-    @Autowired KafkaProperties kafkaProperties;
+    @Autowired VisaService                                                         visaRequestService;
+    @SpyBean   NotifyNewVisaRequestToKafkaTest.KafkaConsumerConfigurationTemporary listener;
+    static     CountDownLatch                                                      countDownLatch = new CountDownLatch(5);
 
     @Test
     void should_send_visa_request_to_queue_after_creating() throws InterruptedException {
@@ -59,17 +60,33 @@ public class NotifyNewVisaRequestToKafkaTest {
                 TimeUnit.SECONDS
         );
 
-//        verify(testKafkaListener, times(5)).acceptDebug(anyString());
         assertAll(
                 () -> assertThat(await)
                               .describedAs("Notification should be delivered " +
                                            "via queue")
                               .isTrue(),
-
-                () -> assertThat(countDownLatch.getCount())
-                              .describedAs("Should receive only one notification")
-                              .isEqualTo(0)
+                () -> verify(
+                        listener,
+                        times(1)
+                ).listen("U-100"),
+                () -> verify(
+                        listener,
+                        times(1)
+                ).listen("U-101"),
+                () -> verify(
+                        listener,
+                        times(1)
+                ).listen("U-102"),
+                () -> verify(
+                        listener,
+                        times(1)
+                ).listen("U-103"),
+                () -> verify(
+                        listener,
+                        times(1)
+                ).listen("U-104")
         );
+
 
     }
 

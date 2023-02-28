@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BackgroundDataLoader {
-    @PostConstruct//(ContextRefreshedEvent.class)
+//    @PostConstruct//(ContextRefreshedEvent.class)
+    @EventListener(ContextRefreshedEvent.class)
     public void loadData(ApplicationContext applicationContext) {
         if (!getData()) {
             throw new RuntimeException("Cannot receiver data from any environment");
